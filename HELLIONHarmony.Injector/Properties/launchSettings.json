@@ -1,0 +1,28 @@
+{
+  "profiles": {
+	"Client Patch": {
+      "commandName": "Project",
+      "commandLineArgs": "-A \"C:\\Program Files (x86)\\Steam\\steamapps\\common\\HELLION modded\\HELLION_Data\\Managed\\Assembly-CSharp.dll\""
+    },
+	"Client Restore Backup": {
+      "commandName": "Project",
+      "commandLineArgs": "-RB -A \"C:\\Program Files (x86)\\Steam\\steamapps\\common\\HELLION modded\\HELLION_Data\\Managed\\Assembly-CSharp.dll\""
+    },
+	"SPServer Patch": {
+      "commandName": "Project",
+      "commandLineArgs": "-A \"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Hellion Dedicated Server modded\\HELLION_Dedicated.exe\""
+    },
+	"SPServer Restore": {
+      "commandName": "Project",
+      "commandLineArgs": "-RB -A \"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Hellion Dedicated Server modded\\HELLION_Dedicated.exe\""
+    },
+    "Dedicated Patch": {
+      "commandName": "Project",
+      "commandLineArgs": "-A \"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Hellion Dedicated Server modded\\HELLION_Dedicated.exe\""
+    },
+	"Dedicated Restore Backup": {
+      "commandName": "Project",
+      "commandLineArgs": "-RB -A \"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Hellion Dedicated Server modded\\HELLION_Dedicated.exe\""
+    }
+  }
+}
