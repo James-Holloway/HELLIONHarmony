@@ -31,10 +31,12 @@ namespace HELLIONHarmony.Injector
             string? assemblyPath = null;
             bool userInput = false;
             bool unpatch = false;
-            bool onlyRestoreBackup = false;
 
             Console.WriteLine("=== HELLIONHarmony Injector/Patcher ===" + Environment.NewLine);
 
+            #region Argument Handling
+            int usedSwitches = 0;
+            bool allowAutoDetect = true;
             if (args.Length == 0)
             {
                 WriteHelp();
@@ -43,7 +45,6 @@ namespace HELLIONHarmony.Injector
             else if (args.Length > 0)
             {
                 args = args.Concat(new string[1]).ToArray(); // add an extra param so no issues when we handle --assembly
-                bool switchUsed = false;
                 for (int a = 0; a < args.Length - 1; a++)
                 {
                     string arg = args[a];
@@ -53,15 +54,16 @@ namespace HELLIONHarmony.Injector
                         case "/ad":
                         case "--auto":
                         case "--auto-detect":
-                            assemblyPath = AutoDetectAssemblyPath();
-                            switchUsed = true;
+                            allowAutoDetect = true;
+                            usedSwitches++;
                             break;
 
                         case "-a":
                         case "/a":
                         case "--assembly":
+                            allowAutoDetect = false;
                             assemblyPath = args[1 + a++]?.Trim().Trim('"');
-                            switchUsed = true;
+                            usedSwitches++;
                             break;
 
                         case "-y":
@@ -69,7 +71,7 @@ namespace HELLIONHarmony.Injector
                         case "--autoconfirm":
                             autoconfirm = true;
                             overwriteBackup = true;
-                            switchUsed = true;
+                            usedSwitches++;
                             break;
 
                         case "-u":
@@ -77,21 +79,15 @@ namespace HELLIONHarmony.Injector
                         case "--undo":
                         case "--unpatch":
                             unpatch = true;
-                            switchUsed = true;
-                            break;
-
-                        case "-rb":
-                        case "/rb":
-                        case "--restore-backup":
-                            onlyRestoreBackup = true;
-                            switchUsed = true;
+                            usedSwitches++;
                             break;
 
                         case "-i":
                         case "/i":
                         case "--input":
                             userInput = true;
-                            switchUsed = true;
+                            allowAutoDetect = false;
+                            usedSwitches++;
                             break;
 
                         case "-nc":
@@ -99,26 +95,26 @@ namespace HELLIONHarmony.Injector
                         case "--nocopy":
                         case "--no-copy":
                             copyAssemblies = false;
-                            switchUsed = true;
+                            usedSwitches++;
                             break;
                         case "-ob":
                         case "/ob":
                         case "--overwrite-backup":
                             overwriteBackup = true;
-                            switchUsed = true;
+                            usedSwitches++;
                             break;
                         case "-nob":
                         case "/nob":
                         case "--no-overwrite-backup":
                             overwriteBackup = false;
-                            switchUsed = true;
+                            usedSwitches++;
                             break;
                         case "-dpsp":
                         case "/dpsp":
                         case "--dont-patch-sp":
                         case "--dontpatchsp":
                             findAndPatchSPServer = false;
-                            switchUsed = true;
+                            usedSwitches++;
                             break;
 
                         case "h":
@@ -131,24 +127,25 @@ namespace HELLIONHarmony.Injector
                         case "/help":
                         case "--help":
                             WriteHelp();
-                            switchUsed = true;
                             return;
                         default:
+                            Console.WriteLine($"Did not recognise the argument/switch: {arg}");
+                            ConsoleExit(1);
                             break;
                     }
                 }
-                if (!switchUsed && args.Length <= 2) // arg length was one until we added one
+
+                if (usedSwitches == 0 && args.Length <= 2) // arg length was one until we added one
                 {
                     assemblyPath = args[0]?.Trim().Trim('"');
                 }
-                else if (userInput)
+                if (userInput)
                 {
-                    Console.WriteLine("Path to HELLION's Assembly-CSharp.dll");
-                    Console.Write("Assembly path: ");
+                    Console.Write("Input path to HELLION's Assembly-CSharp.dll: ");
                     assemblyPath = Console.ReadLine()?.Trim().Trim('"');
                     if (!File.Exists(assemblyPath))
                     {
-                        Console.Error.WriteLine($"ERROR: File at {assemblyPath} does not exist");
+                        Console.Error.WriteLine($"ERROR: Could not find any file at path {assemblyPath}");
                         ConsoleExit(1);
                         return;
                     }
@@ -158,6 +155,13 @@ namespace HELLIONHarmony.Injector
                     WriteHelp();
                     return;
                 }
+            }
+
+            #endregion
+            // Sometimes switches are used without overwriting the assembly path
+            if (allowAutoDetect)
+            {
+                assemblyPath = AutoDetectAssemblyPath();
             }
 
             if (string.IsNullOrEmpty(assemblyPath) || string.IsNullOrWhiteSpace(assemblyPath))
@@ -174,22 +178,6 @@ namespace HELLIONHarmony.Injector
 
             string backupPath = assemblyPath + ".bak";
 
-            if (onlyRestoreBackup)
-            {
-                try
-                {
-                    RestoreBackup(assemblyPath, backupPath);
-                    Console.WriteLine("Restored backup to " + assemblyPath);
-                    ConsoleExit(0);
-                }
-                catch (IOException e)
-                {
-                    Console.Error.WriteLine("Failed to restore from backup: " + e.Message);
-                    ConsoleExit(1);
-                }
-                return;
-            }
-
             if (!unpatch)
                 PatchAssembly(assemblyPath, backupPath);
             else
@@ -197,7 +185,7 @@ namespace HELLIONHarmony.Injector
 
             if (findAndPatchSPServer && IsClient(assemblyPath))
             {
-                string? spPath = Path.GetFullPath(SPServerRelPath, new FileInfo(assemblyPath)?.DirectoryName ?? "") ;
+                string? spPath = Path.GetFullPath(SPServerRelPath, new FileInfo(assemblyPath)?.DirectoryName ?? "");
 
                 if (string.IsNullOrEmpty(spPath) || !File.Exists(spPath))
                 {
@@ -216,6 +204,7 @@ namespace HELLIONHarmony.Injector
             ConsoleExit(0);
         }
 
+        #region Assembly Patching
         public static void PatchAssembly(string assemblyPath, string backupPath)
         {
             Console.WriteLine($"Assembly: {new FileInfo(assemblyPath).Name}{Environment.NewLine}\t{assemblyPath}");
@@ -253,7 +242,7 @@ namespace HELLIONHarmony.Injector
                 else if (overwriteBackup == true)
                 {
                     if (ConsoleUserInput(""))
-                    File.Copy(assemblyPath, backupPath, true);
+                        File.Copy(assemblyPath, backupPath, true);
                 }
                 else
                 {
@@ -262,7 +251,6 @@ namespace HELLIONHarmony.Injector
             }
             else
                 File.Copy(assemblyPath, backupPath, true);
-
 
 
             if (assembly.MainModule.GetType("ZeroGravity.Client") != null)
@@ -278,9 +266,9 @@ namespace HELLIONHarmony.Injector
                 throw new FileNotFoundException("File does not contain the class ZeroGravity.Client or ZeroGravity.Server");
             }
 
-            AddRequiredAssembly("0Harmony.dll");
-            AddRequiredAssemblyByType(typeof(Patches));
-            AddRequiredAssemblyByType(typeof(Plugin));
+            AddRequiredAssembly("0Harmony.dll"); // HarmonyLib
+            AddRequiredAssemblyByType(typeof(Plugin)); // HELLIONHarmony
+            AddRequiredAssemblyByType(typeof(Patches)); // HELLIONHarmony.Loader
 
             try
             {
@@ -298,7 +286,7 @@ namespace HELLIONHarmony.Injector
             if (copyAssemblies)
                 CopyRequiredAssemblies(assemblyPath);
 
-            Console.WriteLine(Environment.NewLine + $"Finished patching assembly {new FileInfo(assemblyPath).Name}! "+ Environment.NewLine);
+            Console.WriteLine(Environment.NewLine + $"Finished patching assembly {new FileInfo(assemblyPath).Name}! " + Environment.NewLine);
         }
 
         public static void PatchClient(AssemblyDefinition assembly, string assemblyPath)
@@ -341,6 +329,9 @@ namespace HELLIONHarmony.Injector
             Patch.Method0(assembly, "ZeroGravity.Server", ".ctor", typeof(Patches), isDedicated ? "StartHarmonyDedicated" : "StartHarmonySP", false);
         }
 
+        #endregion
+
+        #region Unpatching Assemblies
         public static void UnpatchAssembly(string assemblyPath, string backupPath)
         {
             AssemblyDefinition assembly = Patch.GetAssemblyDefinition(assemblyPath);
@@ -376,7 +367,9 @@ namespace HELLIONHarmony.Injector
         {
             File.Copy(backupPath, destinationPath, true);
         }
+        #endregion
 
+        #region Is Functions
         internal static bool IsPatched(AssemblyDefinition assembly)
         {
             TypeDefinition typeDefinition = assembly.MainModule.GetType("ZeroGravity.Client") ?? assembly.MainModule.GetType("ZeroGravity.Server");
@@ -404,7 +397,9 @@ namespace HELLIONHarmony.Injector
                 return true;
             return false;
         }
+        #endregion
 
+        #region Adding Required Assemblies
         public static void AddRequiredAssembly(string path)
         {
             if (RequiredAssemblies.Contains(path))
@@ -418,24 +413,6 @@ namespace HELLIONHarmony.Injector
         public static void ClearRequiredAssemblies()
         {
             RequiredAssemblies.Clear();
-        }
-
-        public static string AutoDetectAssemblyPath()
-        {
-            try
-            {
-                SteamLibrary[] libraries = SteamLibrary.GetSteamLibraries();
-                foreach (SteamLibrary library in libraries)
-                {
-                    SteamGame? HELLION = (from game in library.Games where game.AppId == gameAppId select game).FirstOrDefault();
-                    if (HELLION == null || string.IsNullOrEmpty(HELLION.InstallPath))
-                        continue;
-
-                    return Path.Combine(HELLION.InstallPath, AssemblySubPath);
-                }
-            }
-            catch (FileNotFoundException) { } // thrown when registry key not found (steam not installed)
-            return "";
         }
 
         protected static void CopyRequiredAssemblies(string path)
@@ -480,7 +457,29 @@ namespace HELLIONHarmony.Injector
 #endif
             }
         }
+        #endregion
 
+        #region Assembly Detection through JHolloway.SteamLibrary
+        public static string AutoDetectAssemblyPath()
+        {
+            try
+            {
+                SteamLibrary[] libraries = SteamLibrary.GetSteamLibraries();
+                foreach (SteamLibrary library in libraries)
+                {
+                    SteamGame? HELLION = (from game in library.Games where game.AppId == gameAppId select game).FirstOrDefault();
+                    if (HELLION == null || string.IsNullOrEmpty(HELLION.InstallPath))
+                        continue;
+
+                    return Path.Combine(HELLION.InstallPath, AssemblySubPath);
+                }
+            }
+            catch (FileNotFoundException) { } // thrown when registry key not found (steam not installed)
+            return "";
+        }
+        #endregion
+
+        #region Console helper functions
         public static void WriteHelp()
         {
             Console.WriteLine("HellionHarmonyInjector Usage:" + Environment.NewLine +
@@ -490,7 +489,6 @@ namespace HELLIONHarmony.Injector
 -U         : Unpatch the assembly, using <Path>.bak [/U, --unpatch, --undo]
 -AD        : Automatically detect the client and SP server assembly through Steam Libraries [/AD, --auto, --auto-detect]
 -I         : Use user input for assembly path [/I, --input]
--RB        : Restore Backup file from <Path>.bak to <Path> and exit [/RB, --restore-backup]
 -H         : Show this help screen
 
 When patching:
@@ -561,5 +559,6 @@ When patching:
             }
             while (true);
         }
+        #endregion
     }
 }

@@ -8,7 +8,7 @@ A [Harmony](https://github.com/pardeike/Harmony) injector for late game [HELLION
 
 It should be as easy, make sure the game isn't running, start `HELLIONHarmonyInjector.exe` and it should auto detect your HELLION installation, make a backup and patch it. 
 
-To unpatch your game, reference the same assembly and add the -RB switch to the program command line to Restore Backup or simply overwrite the main files with the `<filename.ext>.bak` files. 
+To unpatch your game, reference the same assembly and add the -U switch to the program command line to unpatch or simply overwrite the main files with the `<filename.ext>.bak` files. 
 
 If you require further help, use the `-?` switch. 
 
