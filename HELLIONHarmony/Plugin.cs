@@ -22,9 +22,9 @@ namespace HELLIONHarmony
         public Plugin() { }
 
         /// <summary>
-        /// <see cref="HELLIONPatchAttribute"/> that fall outside this scope won't be run. 
+        /// This plugin will only run when the PatchScope matches the PluginManager's CurrentScope
         /// </summary>
-        public virtual PatchScope OnlyScope => PatchScope.Client;
+        public virtual PatchScope OnlyScope => PatchScope.Shared;
 
         public abstract string Identifier { get; }
         public abstract string Author { get; }

@@ -9,7 +9,7 @@ namespace HELLIONHarmony
 {
     public class HELLIONPatchAttribute : HarmonyPatch
     {
-        PatchScope PatchScope { get; set; }
+        public PatchScope PatchScope { get; set; }
         public HELLIONPatchAttribute(PatchScope patchScope) : base()
         {
             PatchScope = patchScope;
