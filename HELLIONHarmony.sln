@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HELLIONHarmony", "HELLIONHa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HELLIONHarmony.TestPlugin", "HELLIONHarmony.TestPlugin\HELLIONHarmony.TestPlugin.csproj", "{E0010E3A-49C3-4180-9AFF-21D49CF9670D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HELLIONHarmony.HideDisclaimer", "HELLIONHarmony.HideDisclaimer\HELLIONHarmony.HideDisclaimer.csproj", "{6B207576-6361-433D-A827-BCAA5C750916}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,18 @@ Global
 		{E0010E3A-49C3-4180-9AFF-21D49CF9670D}.Release|x64.Build.0 = Release|x64
 		{E0010E3A-49C3-4180-9AFF-21D49CF9670D}.Release|x86.ActiveCfg = Release|x86
 		{E0010E3A-49C3-4180-9AFF-21D49CF9670D}.Release|x86.Build.0 = Release|x86
+		{6B207576-6361-433D-A827-BCAA5C750916}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B207576-6361-433D-A827-BCAA5C750916}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B207576-6361-433D-A827-BCAA5C750916}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6B207576-6361-433D-A827-BCAA5C750916}.Debug|x64.Build.0 = Debug|Any CPU
+		{6B207576-6361-433D-A827-BCAA5C750916}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6B207576-6361-433D-A827-BCAA5C750916}.Debug|x86.Build.0 = Debug|Any CPU
+		{6B207576-6361-433D-A827-BCAA5C750916}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B207576-6361-433D-A827-BCAA5C750916}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B207576-6361-433D-A827-BCAA5C750916}.Release|x64.ActiveCfg = Release|Any CPU
+		{6B207576-6361-433D-A827-BCAA5C750916}.Release|x64.Build.0 = Release|Any CPU
+		{6B207576-6361-433D-A827-BCAA5C750916}.Release|x86.ActiveCfg = Release|Any CPU
+		{6B207576-6361-433D-A827-BCAA5C750916}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
