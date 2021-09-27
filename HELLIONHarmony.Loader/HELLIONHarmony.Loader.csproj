@@ -115,13 +115,14 @@
   <ItemGroup>
     <Compile Include="ClientPatches\PluginStop.cs" />
     <Compile Include="ClientPatches\PluginStart.cs" />
-    <Compile Include="ClientPatches\SteamManagerInit.cs" />
-    <Compile Include="DedicatedPatches\PluginInit.cs" />
+    <Compile Include="DedicatedPatches\PluginStart.cs" />
+    <Compile Include="DedicatedPatches\PluginStop.cs" />
     <Compile Include="HELLIONHarmony.cs" />
     <Compile Include="Patches.cs" />
     <Compile Include="PluginManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SPPatches\PluginInit.cs" />
+    <Compile Include="SPPatches\PluginStart.cs" />
+    <Compile Include="SPPatches\PluginStop.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -1,5 +1,5 @@
 ﻿extern alias HarmonyLib;
-extern alias HELLIONClient;
+extern alias HELLIONSP;
 
 using System;
 using System.Collections.Generic;
@@ -7,13 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HarmonyLib::HarmonyLib;
-using HELLIONClient;
-using HELLIONClient::ZeroGravity;
+using HELLIONSP;
+using HELLIONSP::ZeroGravity;
 
-namespace HELLIONHarmony.Loader.ClientPatches
+namespace HELLIONHarmony.Loader.SPPatches
 {
-    [HarmonyPatch(typeof(Client), "QuitApplication")]
-    [HarmonyPatch(typeof(Client), "OnDestroy")]
+    [HarmonyPatch(typeof(HiResTime), "Stop")]
     internal class PluginStop
     {
         public static void Postfix()

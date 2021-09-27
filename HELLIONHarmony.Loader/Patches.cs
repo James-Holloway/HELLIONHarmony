@@ -17,8 +17,6 @@ namespace HELLIONHarmony.Loader
 {
     public static class Patches
     {
-        // We can't harmony.PatchAll(assembly) as we can't patch Client only functions on a server and vice versa
-
         internal static Harmony harmony = new Harmony("HELLIONHarmony.InjectHarmony");
 
         private static IEnumerable<Type> GetPatchUnderNamespace(string @namespace)

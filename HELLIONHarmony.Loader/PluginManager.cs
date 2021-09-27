@@ -50,6 +50,48 @@ namespace HELLIONHarmony.Loader
                 Logger.WriteLine("Cannot re-init PluginManager");
         }
 
+        internal static Harmony GetCreatePluginHarmony(Plugin plugin)
+        {
+            Harmony pluginHarmony = GetPluginHarmony(plugin) ?? new Harmony(plugin.Identifier);
+            pluginHarmonies[plugin] = pluginHarmony;
+            return pluginHarmony;
+        }
+
+        // Only supports PatchClassProcessors at the moment
+        // TODO support further Harmony features such as methods
+        internal static List<PatchClassProcessor> GetPatchesMatchingScope(Plugin plugin, PatchScope scope, bool allowBaseHarmony = false)
+        {
+            Assembly pluginAssembly = plugin.GetType().Assembly;
+            Type[] pluginTypes = AccessTools.GetTypesFromAssembly(pluginAssembly);
+            Harmony pluginHarmony = GetCreatePluginHarmony(plugin);
+
+            List<PatchClassProcessor> patchClasses = new List<PatchClassProcessor>();
+
+            foreach (Type type in pluginTypes)
+            {
+                // If the type has a HELLIONPatchAttribute that matches the provided scope then add it to the output list
+                bool hasHELLIONAttribute = type.GetCustomAttributes<HELLIONPatchAttribute>(true)
+                    .Where(att => att.PatchScope.HasFlag(scope))
+                    .Count() > 0;
+                if (hasHELLIONAttribute)
+                {
+                    patchClasses.Add(pluginHarmony.CreateClassProcessor(type));
+                    continue;
+                }
+                if (allowBaseHarmony)
+                {
+                    bool hasHarmonyAttribute = (HarmonyMethodExtensions.GetFromType(type)?.Count() ?? 0) > 0;
+                    if (hasHarmonyAttribute)
+                    {
+                        patchClasses.Add(pluginHarmony.CreateClassProcessor(type));
+                        continue;
+                    }
+                }
+            }
+
+            return patchClasses;
+        }
+
         /// <summary>
         /// Loads plugins from the plugin directory at the <paramref name="basePath"/>
         /// </summary>
@@ -226,9 +268,11 @@ namespace HELLIONHarmony.Loader
                 catch { }
 
                 MethodInfo setEnabledMethod = typeof(Plugin).GetMethod("SetEnabled", BindingDiscovery);
-                setEnabledMethod.Invoke(plugin, new object[] { true } );
+                setEnabledMethod.Invoke(plugin, new object[] { true });
 
                 enabledPlugins.Add(plugin);
+
+                PatchPlugin(plugin);
 
                 PluginEnabled?.Invoke(plugin);
 
@@ -236,6 +280,15 @@ namespace HELLIONHarmony.Loader
             }
             catch { }
             return false;
+        }
+
+        internal static void PatchPlugin(Plugin plugin)
+        {
+            List<PatchClassProcessor> patchClassProcessors = GetPatchesMatchingScope(plugin, CurrentScope, true);
+            foreach(PatchClassProcessor patchClass in patchClassProcessors)
+            {
+                patchClass.Patch();
+            }
         }
 
         /// <summary>
@@ -260,6 +313,8 @@ namespace HELLIONHarmony.Loader
                 }
                 catch { }
 
+                UnpatchPlugin(plugin);
+
                 MethodInfo setEnabledMethod = typeof(Plugin).GetMethod("SetEnabled", BindingDiscovery);
                 setEnabledMethod.Invoke(plugin, new object[] { false });
 
@@ -268,6 +323,11 @@ namespace HELLIONHarmony.Loader
             }
             catch { }
             return false;
+        }
+
+        internal static void UnpatchPlugin(Plugin plugin)
+        {
+            GetPluginHarmony(plugin).UnpatchAll(plugin.Identifier);
         }
     }
 }
