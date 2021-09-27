@@ -6,7 +6,7 @@ A [Harmony](https://github.com/pardeike/Harmony) injector for late game [HELLION
 
 ## How do I patch my copy of HELLION?
 
-It should be as easy, make sure the game isn't running, start `HELLIONHarmony.Injector.exe` and it should auto detect your HELLION installation, make a backup and patch it. 
+It should be as easy, make sure the game isn't running, start `HELLIONHarmonyInjector.exe` and it should auto detect your HELLION installation, make a backup and patch it. 
 
 To unpatch your game, reference the same assembly and add the -RB switch to the program command line to Restore Backup or simply overwrite the main files with the `<filename.ext>.bak` files. 
 
@@ -39,7 +39,7 @@ This is a test menu plugin to try and change the discord presence. You may use i
 
 ## How do I make my own plugin?
 
-You will need to create a .NET Class Library targetting .NET Framework 4.7.2. Add references to the (unmodified) HELLION assemblies. 
+You will need to create a .NET Class Library targetting .NET Framework 4.7.2. Add references to the (unmodified) HELLION assemblies and the Nuget package `Lib.Harmony`. I recommend turning off "Copy local" on these dependencies as they will be already be loaded on plugin load.
 
 Create your Plugin derivative class and give it a unique identifier, this is how Harmony handles the patches. Then create your other classes in the same project, giving the classes the `HELLIONPatch` attribute and the patch scope for it to apply to. Alternatively you can give the plugin the `PatchScope OnlyScope` property and use the `HarmonyPatch` attribute. 
 
