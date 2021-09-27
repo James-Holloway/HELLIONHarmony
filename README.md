@@ -35,7 +35,10 @@ This contains the PluginManager which will load files from the plugin directory 
 \* Not done yet
 
 ### HELLIONHarmony.TestPlugin
-This is a test menu plugin to try and change the discord presence. You may use it as a template as it is likely the most up to date 'documentation' on how to make a plugin. 
+This is a shared plugin used for testing when a plugin is loaded or unloaded
+
+## HELLIONHarmony.HideDisclaimer
+A simple IMenuPlugin that runs after plugins are loaded. You may use this and TestPlugin as templates as they are likely the most up to date 'documentation' on how to make a plugin. 
 
 ## How do I make my own plugin?
 

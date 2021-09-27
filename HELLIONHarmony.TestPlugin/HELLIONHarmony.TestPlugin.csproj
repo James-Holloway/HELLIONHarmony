@@ -90,11 +90,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DiscordPresence.cs" />
     <Compile Include="TestPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\HELLIONHarmony.Loader\HELLIONHarmony.Loader.csproj">
+      <Project>{86bd1c36-ca9e-4fc5-aa09-65a375480694}</Project>
+      <Name>HELLIONHarmony.Loader</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\HELLIONHarmony\HELLIONHarmony.csproj">
       <Project>{a874c5ff-d8e0-4343-bac7-fe1b32017d9f}</Project>
       <Name>HELLIONHarmony</Name>

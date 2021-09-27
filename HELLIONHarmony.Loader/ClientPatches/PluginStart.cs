@@ -9,15 +9,18 @@ using System.Threading.Tasks;
 using HarmonyLib::HarmonyLib;
 using HELLIONClient;
 using HELLIONClient::ZeroGravity;
+using HELLIONClient::ZeroGravity.Network;
 
 namespace HELLIONHarmony.Loader.ClientPatches
 {
-    [HarmonyPatch(typeof(Client), "Start")]
+    [HarmonyPriority(Priority.First)]
+    [HarmonyPatch(typeof(ConnectionThread), "FinalizeConnecting")]
     internal class PluginStart
     {
-        public static void Postfix()
+        public static void Prefix(ConnectionThread __instance, bool ___gameSocketReady)
         {
-            PluginManager.EnableAllPlugins();
+            if (___gameSocketReady)
+                PluginManager.EnableAllPlugins();
         }
     }
 }

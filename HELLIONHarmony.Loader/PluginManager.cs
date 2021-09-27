@@ -236,7 +236,7 @@ namespace HELLIONHarmony.Loader
             Logger.WriteLine("Disabiling all plugins");
             Type typeIMenuPlugin = typeof(IMenuPlugin);
 
-            foreach (Plugin plugin in enabledPlugins)
+            foreach (Plugin plugin in new HashSet<Plugin>(enabledPlugins))
             {
                 Type pluginType = plugin.GetType();
                 if (!pluginType.GetInterfaces().Contains(typeIMenuPlugin))
@@ -262,8 +262,8 @@ namespace HELLIONHarmony.Loader
                 Logger.WriteLine($"Enabling plugin {plugin.Identifier}");
                 try
                 {
-                    MethodInfo onEnableMethod = typeof(Plugin).GetMethod("OnEnable", BindingDiscovery);
-                    onEnableMethod.Invoke(plugin, null);
+                    MethodInfo onEnabledMethod = plugin.GetType().GetMethod("OnEnabled", BindingDiscovery);
+                    onEnabledMethod?.Invoke(plugin, null);
                 }
                 catch { }
 
@@ -308,8 +308,8 @@ namespace HELLIONHarmony.Loader
                 PluginDisabled?.Invoke(plugin);
                 try
                 {
-                    MethodInfo onDisableMethod = typeof(Plugin).GetMethod("OnDisable", BindingDiscovery);
-                    onDisableMethod.Invoke(plugin, null);
+                    MethodInfo onDisabledMethod = plugin.GetType().GetMethod("OnDisabled", BindingDiscovery);
+                    onDisabledMethod?.Invoke(plugin, null);
                 }
                 catch { }
 
