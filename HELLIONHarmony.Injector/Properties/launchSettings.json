@@ -13,7 +13,8 @@
       "commandLineArgs": "-A \"C:\\Program Files (x86)\\Steam\\steamapps\\common\\Hellion Dedicated Server modded\\HELLION_Dedicated.exe\""
     },
     "Main Patch": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "-AD"
     },
     "Client Unpatch": {
       "commandName": "Project",

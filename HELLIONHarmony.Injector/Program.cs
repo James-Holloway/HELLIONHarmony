@@ -150,7 +150,7 @@ namespace HELLIONHarmony.Injector
                         return;
                     }
                 }
-                else if (string.IsNullOrEmpty(assemblyPath))
+                else if (string.IsNullOrEmpty(assemblyPath) && !allowAutoDetect)
                 {
                     WriteHelp();
                     return;
@@ -471,7 +471,7 @@ namespace HELLIONHarmony.Injector
                     if (HELLION == null || string.IsNullOrEmpty(HELLION.InstallPath))
                         continue;
 
-                    return Path.Combine(HELLION.InstallPath, AssemblySubPath);
+                    return HELLION.InstallPath + AssemblySubPath;
                 }
             }
             catch (FileNotFoundException) { } // thrown when registry key not found (steam not installed)
